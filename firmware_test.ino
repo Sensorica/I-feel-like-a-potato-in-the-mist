@@ -7,7 +7,7 @@
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor *myMotor1 = AFMS.getMotor(1);// port M1
 Adafruit_DCMotor *myMotor2 = AFMS.getMotor(2);// port M2
-int motorSpeed[] = {255, 150};
+int motorSpeed[] = {150, 200};
 int motorDirection[] = {FORWARD, FORWARD};
 boolean  Motor1Boolean ;
 boolean Motor2Boolean ;
@@ -16,7 +16,8 @@ int Sensor1 ; // Sensor1 connected to this digital pin number
 int Sensor2 ; // Sensor1 connected to this digital pin number
 int PrevSensor0, PrevSensor1, PrevSensor2;
 char inChar;
-
+int counterM1; 
+int counterM2;
 
 void setup() {
   // initialize things
@@ -31,37 +32,24 @@ void setup() {
   pinMode(Sensor1, INPUT); // Define Sensor2 as a digital in pin
   pinMode(Sensor2, INPUT); // Define Sensor2 as a digital in pin
 
-  // set MOTOR control pins as digital out
-  //  int Motor1 = 8; // Sensor0 connected to this digital pin number
-  //  int Motor2 = 9; // Sensor1 connected to this digital pin number
-  //  pinMode(Motor1, INPUT); // Define Sensor0 as a digital in pin
-  //  pinMode(Motor2, INPUT); // Define Sensor2 as a digital in pin
-
-  // pinMode(13, OUTPUT);
+  
 
   Serial.begin(9600);
-  //Keyboard.begin();
-
+  
   //initial motor speed
   initializeShield();
-  PrevSensor0 = readSensor(Sensor0);//HIGH;
-  PrevSensor1 = readSensor(Sensor1);//LOW;
-  PrevSensor2 = readSensor(Sensor2);
-
-
+  
 }
 
 // the loop function runs over and over again forever
 void loop() {
-//  if (Serial.available() > 0) {
-//    inChar = Serial.read();
-//    Serial.print("You sent me: \'");
-//    Serial.write(inChar);
-//    Serial.println("");
-//    Serial.println("Prev0="+ PrevSensor0);// + " Prev1="+PrevSensor0+" prev2="+PrevSensor2);
-//    
-//  }
+  PrevSensor0 = readSensor(Sensor0);//HIGH;
+  PrevSensor1 = readSensor(Sensor1);//LOW;
+  PrevSensor2 = readSensor(Sensor2);
 
+//Serial.println (PrevSensor0);
+//Serial.println (PrevSensor1);
+//Serial.println (PrevSensor2);  
 
   if (PrevSensor0 == HIGH && readSensor(Sensor0) == LOW) // if hole
   {
@@ -70,17 +58,20 @@ void loop() {
     Motor1Boolean = true;
     Motor2Boolean = true;
 
-    moveMotor(myMotor1, FORWARD); // move Motor1
-    moveMotor(myMotor2, FORWARD); // move Motor2
-    delay(10);
+    moveMotor(myMotor1, FORWARD, motorSpeed[1]); // move Motor1
+    moveMotor(myMotor2, BACKWARD, motorSpeed[0]); // move Motor2
+    counterM1 = millis();
+    counterM2 = counterM1;
   }
 
   if ( Motor1Boolean == true)
   {
     if (PrevSensor1 == LOW && readSensor(Sensor1) == HIGH) // if hole
     {
-      Motor1Boolean = false;
-      stopMotor(myMotor1); // stop Motor1
+      if (millis() - counterM1 >= 240){ 
+        Motor1Boolean = false;
+        stopMotor(myMotor1); // stop Motor1
+      }
     }
   }
 
@@ -88,31 +79,26 @@ void loop() {
   {
     if (PrevSensor2 == LOW && readSensor(Sensor2) == HIGH) // if hole
     {
-      Motor2Boolean = false;
-      stopMotor(myMotor2); // stop Motor2
+     long runTime = millis() - counterM2; 
+      if (runTime >= 240)
+      {
+        Motor2Boolean = false;
+        stopMotor(myMotor2); // stop Motor2
+      }
+      else {
+        Serial.println (runTime);
+      }
     }
   }
 }
 int readSensor(int sensor) {
-//  int highOrLow;
-//  switch (inChar) {
-//    case 'u':
-//      // move mouse up
-//      highOrLow = HIGH;
-//      break;
-//    case 'd':
-//      // move mouse down
-//      highOrLow = LOW;
-//      break;
-//  }
-//  return highOrLow;
+
   return digitalRead(sensor);
 
 }
 void moveMotor(Adafruit_DCMotor *myMotor, int directionFB, uint8_t speed) {
   myMotor->setSpeed(speed);
   myMotor->run(directionFB);
-  delay(10);
 }
 
 void moveMotor(Adafruit_DCMotor *myMotor, int directionFB) {
@@ -121,7 +107,6 @@ void moveMotor(Adafruit_DCMotor *myMotor, int directionFB) {
 
 void stopMotor(Adafruit_DCMotor *myMotor) {
   myMotor->run(RELEASE);
-  delay(1000);
 }
 
 void initializeShield() {
