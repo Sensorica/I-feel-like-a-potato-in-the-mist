@@ -19,7 +19,7 @@ char inChar;
 //initalSensorState1, initalSensorState2;
 int initalSensorState1 = HIGH;
 int initalSensorState2 = HIGH;
-boolean ini=HIGH;
+boolean ini = HIGH;
 
 void setup() {
   // initialize things
@@ -38,7 +38,7 @@ void setup() {
 
   Serial.begin(9600);
 
-  
+
 
   //initial motor speed
   AFMS.begin();  // create with the default frequency 1.6KHz
@@ -55,17 +55,18 @@ void loop() {
   PrevSensor0 = digitalRead(Sensor0);//HIGH;
   PrevSensor1 = digitalRead(Sensor1);//LOW;
   PrevSensor2 = digitalRead(Sensor2);
-
-  Serial.print(PrevSensor0);
-  Serial.print(", ");
-  Serial.print (PrevSensor1);
-  Serial.print(",");
-  Serial.println (PrevSensor2);
+  //
+  //  Serial.print(PrevSensor0);
+  //  Serial.print(", ");
+  //  Serial.print (PrevSensor1);
+  //  Serial.print(",");
+  //  Serial.println (PrevSensor2);
+  delay(1);
 
   if (PrevSensor0 == LOW && digitalRead(Sensor0) == HIGH) // if hole
   {
 
- //   PrevSensor0 = digitalRead(Sensor0);
+    //   PrevSensor0 = digitalRead(Sensor0);
 
     initalSensorState1 = digitalRead(Sensor1);
     initalSensorState2 = digitalRead(Sensor2);
@@ -76,12 +77,9 @@ void loop() {
     Motor1Boolean = true;
     Motor2Boolean = true;
 
-    myMotor1->setSpeed(motorSpeed[1]);
     myMotor1->run(FORWARD);
-    
-    myMotor2->setSpeed(motorSpeed[0]);
     myMotor2->run(FORWARD);
-    
+
   }
 
   if ( Motor1Boolean == true)
@@ -89,11 +87,11 @@ void loop() {
     if (PrevSensor1 == LOW && digitalRead(Sensor1) == HIGH) // if from hole to paper
     {
 
-      
+
       if (initalSensorState1 == HIGH) { // sensor was not in hole
         Motor1Boolean = false;
         myMotor1->run(RELEASE);
-        
+
 
       } else {
         initalSensorState1 = HIGH;
@@ -103,7 +101,7 @@ void loop() {
     }
   }
 
-//delay(1);
+  delay(1);
 
   if ( Motor2Boolean == true)
   {
