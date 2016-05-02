@@ -8,7 +8,6 @@ Adafruit_DCMotor *myMotor2 = AFMS.getMotor(1);// port M2
 int motorSpeed[] = {120, 120};
 int motorDirection[] = {FORWARD, BACKWARD};
 
-const byte sensor0 = A0;
 const byte sensor1 = 2;
 const byte sensor2 = 3;
 
