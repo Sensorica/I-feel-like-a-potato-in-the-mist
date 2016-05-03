@@ -7,7 +7,7 @@ import serial
 import time
 from datetime import datetime
 
-#port = serial.Serial("/dev/tty.usbserial-A800ctKK", 115200)
+port = serial.Serial("/dev/tty.usbserial-A800ctKK", 115200)
 
 loremFile = open ('lorem.txt')
 lorem =  loremFile.read()
@@ -22,17 +22,15 @@ while loremIndex <= loremLength:
     while lorem[loremIndex + lineLength] != " ":
 	    lineLength -= 1
     
-    printLine = lorem [loremIndex:loremIndex + lineLength] + '\n'	
+    printLine = lorem [loremIndex : loremIndex + lineLength] + '\n'	
     print printLine + " " + lineLength
     for c in printLine:
         if c == '\n':
             time.sleep(5)
             port.write(c)
-            #print "new line"
             time.sleep(5)
         else:
             time.sleep(0.6)
             port.write(c)
-            print c
     loremIndex += lineLength
-#port.close()
+port.close()
